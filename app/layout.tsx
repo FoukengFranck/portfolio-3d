@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "FKBF | Foukeng Kemayou — Développeur Web Fullstack",
   description: "Developer web & UI/UX Designer",
   manifest: "/manifest.json",
+  themeColor: "#08091a",
 };
 
 export default function RootLayout({
