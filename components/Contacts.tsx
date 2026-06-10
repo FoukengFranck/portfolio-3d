@@ -1,15 +1,21 @@
-"use client"
+"use client";
 
 // ╔══════════════════════════════════════════════════════════════════╗
-//  Contact.tsx — Formulaire de contact avec validation + états animés
+//  Contact.tsx — Formulaire de contact fonctionnel avec Resend
 //  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
 // ╚══════════════════════════════════════════════════════════════════╝
 
-import { useRef, useState } from "react"
-import { motion, useInView, AnimatePresence } from "framer-motion"
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
-  Mail, MapPin, Phone, Send, CheckCircle2, AlertCircle, Loader2,
-} from "lucide-react"
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -23,20 +29,32 @@ const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M18.244 2.25l-7.619 8.81L3.75 2.25H1.5L10.32 12.75 2.25 21.75h2.25l6.75-7.81 7.5 8.81h2.25L13.5 12.75 21.75 2.25z" />
-  </svg>
-);
-
 // ─────────────────────────────────────────────────────────────────
 //  1. DONNÉES
 // ─────────────────────────────────────────────────────────────────
 const CONTACT_INFO = [
-  { icon: Mail,    label: "Email",        value: "founkengbavel@gmail.com",  href: "mailto:adam@portfolio.dev", color: "#22d3ee" },
-  { icon: MapPin,  label: "Localisation", value: "Douala, Cameroun",       href: "#",                         color: "#818cf8" },
-  { icon: Phone,   label: "Téléphone",    value: "+237 670494508",   href: "tel:+237670494508",          color: "#34d399" },
-]
+  {
+    icon: Mail,
+    label: "Email",
+    value: "founkengbavel@gmail.com",
+    href: "mailto:founkengbavel@gmail.com",
+    color: "#22d3ee",
+  },
+  {
+    icon: MapPin,
+    label: "Localisation",
+    value: "Douala, Cameroun",
+    href: "#",
+    color: "#818cf8",
+  },
+  {
+    icon: Phone,
+    label: "Téléphone",
+    value: "+237 670494508",
+    href: "tel:+237670494508",
+    color: "#34d399",
+  },
+];
 
 const SOCIALS = [
   {
@@ -51,61 +69,80 @@ const SOCIALS = [
     href: "https://www.linkedin.com/in/bavel-founkeng/",
     color: "#0ea5e9",
   },
-  // {
-  //   icon: XIcon,
-  //   label: "X",
-  //   href: "https://twitter.com/adamdev",
-  //   color: "#22d3ee",
-  // },
 ];
 
-type FormData  = { name: string; email: string; subject: string; message: string }
-type FieldErr  = Partial<Record<keyof FormData, string>>
-type Status    = "idle" | "loading" | "success" | "error"
+type FormData = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+};
+type FieldErr = Partial<Record<keyof FormData, string>>;
+type Status = "idle" | "loading" | "success" | "error";
 
 // ─────────────────────────────────────────────────────────────────
 //  2. VALIDATION
 // ─────────────────────────────────────────────────────────────────
 function validate(data: FormData): FieldErr {
-  const e: FieldErr = {}
-  if (!data.name.trim())    e.name    = "Le nom est requis."
-  if (!data.email.trim())   e.email   = "L'email est requis."
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) e.email = "Format invalide."
-  if (!data.subject.trim()) e.subject = "Le sujet est requis."
-  if (!data.message.trim()) e.message = "Le message est requis."
-  else if (data.message.length < 20)   e.message = "Minimum 20 caractères."
-  return e
+  const e: FieldErr = {};
+  if (!data.name.trim()) e.name = "Le nom est requis.";
+  if (!data.email.trim()) e.email = "L'email est requis.";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
+    e.email = "Format invalide.";
+  if (!data.subject.trim()) e.subject = "Le sujet est requis.";
+  if (!data.message.trim()) e.message = "Le message est requis.";
+  else if (data.message.length < 20) e.message = "Minimum 20 caractères.";
+  return e;
 }
 
 // ─────────────────────────────────────────────────────────────────
 //  3. VARIANTES
 // ─────────────────────────────────────────────────────────────────
 const titleVariants = {
-  hidden:  { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
-}
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 // ─────────────────────────────────────────────────────────────────
 //  4. SUB-COMPOSANT — Champ de formulaire animé
 // ─────────────────────────────────────────────────────────────────
 function Field({
-  label, id, type = "text", placeholder, value, onChange, error, multiline = false,
+  label,
+  id,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  error,
+  multiline = false,
 }: {
-  label: string; id: keyof FormData; type?: string
-  placeholder: string; value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  error?: string; multiline?: boolean
+  label: string;
+  id: keyof FormData;
+  type?: string;
+  placeholder: string;
+  value: string;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
+  error?: string;
+  multiline?: boolean;
 }) {
-  const [focused, setFocused] = useState(false)
-  const Tag = multiline ? "textarea" : "input"
+  const [focused, setFocused] = useState(false);
+  const Tag = multiline ? "textarea" : "input";
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-xs font-medium text-slate-500 uppercase tracking-widest">
+      <label
+        htmlFor={id}
+        className="text-xs font-medium text-slate-500 uppercase tracking-widest"
+      >
         {label}
       </label>
       <div className="relative">
-        {/* Glow de focus */}
         <AnimatePresence>
           {focused && (
             <motion.div
@@ -114,7 +151,9 @@ function Field({
                 border: error
                   ? "1px solid rgba(248,113,113,0.5)"
                   : "1px solid rgba(34,211,238,0.4)",
-                background: error ? "rgba(248,113,113,0.06)" : "rgba(34,211,238,0.06)",
+                background: error
+                  ? "rgba(248,113,113,0.06)"
+                  : "rgba(34,211,238,0.06)",
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -154,15 +193,15 @@ function Field({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
 //  5. SUB-COMPOSANT — Informations de contact (colonne gauche)
 // ─────────────────────────────────────────────────────────────────
 function ContactInfo() {
-  const ref      = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" })
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
   return (
     <motion.div
@@ -172,7 +211,6 @@ function ContactInfo() {
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Intro */}
       <div className="space-y-4">
         <h3 className="text-2xl font-extrabold text-white">
           Travaillons{" "}
@@ -187,7 +225,6 @@ function ContactInfo() {
         </p>
       </div>
 
-      {/* Liens de contact */}
       <div className="flex flex-col gap-3">
         {CONTACT_INFO.map(({ icon: Icon, label, value, href, color }, i) => (
           <motion.a
@@ -214,10 +251,7 @@ function ContactInfo() {
               <p className="text-[10px] text-slate-600 uppercase tracking-widest">
                 {label}
               </p>
-              <p
-                className="text-sm text-slate-300 font-medium mt-0.5
-                            group-hover:text-white transition-colors"
-              >
+              <p className="text-sm text-slate-300 font-medium mt-0.5 group-hover:text-white transition-colors">
                 {value}
               </p>
             </div>
@@ -225,32 +259,11 @@ function ContactInfo() {
         ))}
       </div>
 
-      {/* Réseaux */}
       <div>
         <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] mb-4">
           Retrouve-moi sur
         </p>
         <div className="flex gap-3">
-          {/* {SOCIALS.map(({ icon: Icon, label, href, color }, i) => (
-            <motion.a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.07]
-                         flex items-center justify-center text-slate-500
-                         hover:border-white/20 transition-colors"
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.5 + i * 0.07, type: "spring", stiffness: 300 }}
-              whileHover={{ scale: 1.15, color }}
-              whileTap={{ scale: 0.92 }}
-            >
-              <Icon size={17} strokeWidth={1.5} />
-            </motion.a>
-          ))} */}
-
           {SOCIALS.map(({ icon: Icon, label, href, color }, i) => (
             <motion.a
               key={label}
@@ -271,13 +284,12 @@ function ContactInfo() {
               whileHover={{ scale: 1.15, color }}
               whileTap={{ scale: 0.92 }}
             >
-              <Icon size={19} /> {/* SVG inline n'utilise pas strokeWidth */}
+              <Icon size={19} />
             </motion.a>
           ))}
         </div>
       </div>
 
-      {/* Badge disponibilité */}
       <motion.div
         className="p-5 rounded-2xl bg-cyan-400/[0.06] border border-cyan-400/20"
         initial={{ opacity: 0, y: 16 }}
@@ -302,37 +314,59 @@ function ContactInfo() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  6. SUB-COMPOSANT — Formulaire
+//  6. SUB-COMPOSANT — Formulaire fonctionnel
 // ─────────────────────────────────────────────────────────────────
 function ContactForm() {
-  const ref      = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" })
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
-  const [form,   setForm]   = useState<FormData>({ name: "", email: "", subject: "", message: "" })
-  const [errors, setErrors] = useState<FieldErr>({})
-  const [status, setStatus] = useState<Status>("idle")
+  const [form, setForm] = useState<FormData>({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState<FieldErr>({});
+  const [status, setStatus] = useState<Status>("idle");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setForm((p) => ({ ...p, [name]: value }))
-    if (errors[name as keyof FormData]) setErrors((p) => ({ ...p, [name]: undefined }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setForm((p) => ({ ...p, [name]: value }));
+    if (errors[name as keyof FormData])
+      setErrors((p) => ({ ...p, [name]: undefined }));
+  };
 
   const handleSubmit = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    const errs = validate(form)
-    if (Object.keys(errs).length > 0) { setErrors(errs); return }
-
-    setStatus("loading")
-    await new Promise((r) => setTimeout(r, 1800)) // simuler l'appel API
-
-    if (Math.random() > 0.05) {
-      setStatus("success")
-      setForm({ name: "", email: "", subject: "", message: "" })
-    } else {
-      setStatus("error")
+    e.preventDefault();
+    const errs = validate(form);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
     }
-  }
+
+    setStatus("loading");
+
+    try {
+      // VRAI APPEL API : Envoi des données vers notre route backend Route Handler
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Erreur d'envoi:", error);
+      setStatus("error");
+    }
+  };
 
   return (
     <motion.div
@@ -342,14 +376,10 @@ function ContactForm() {
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="relative rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.07]">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/[0.04]
-                        rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/[0.04] rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 p-8">
-
-          {/* AnimatePresence mode="wait" → attend la fin de exit avant d'afficher le suivant */}
           <AnimatePresence mode="wait">
-
             {/* ── État succès ─────────────────────────────── */}
             {status === "success" ? (
               <motion.div
@@ -365,22 +395,29 @@ function ContactForm() {
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
                 >
-                  <CheckCircle2 size={56} className="text-cyan-400" strokeWidth={1.5} />
+                  <CheckCircle2
+                    size={56}
+                    className="text-cyan-400"
+                    strokeWidth={1.5}
+                  />
                 </motion.div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Message envoyé !</h3>
-                  <p className="text-slate-400 text-sm mt-2">Je te réponds sous 24h.</p>
+                  <h3 className="text-xl font-bold text-white">
+                    Message envoyé !
+                  </h3>
+                  <p className="text-slate-400 text-sm mt-2">
+                    Je te réponds sous 24h.
+                  </p>
                 </div>
                 <motion.button
-                  className="px-5 py-2.5 text-sm rounded-xl border border-white/15
-                             text-slate-300 hover:border-cyan-400/40 transition-colors"
+                  className="px-5 py-2.5 text-sm rounded-xl border border-white/15 text-slate-300 hover:border-cyan-400/40 transition-colors"
                   onClick={() => setStatus("idle")}
-                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   Envoyer un autre message
                 </motion.button>
               </motion.div>
-
             ) : (
               // ── Formulaire ──────────────────────────────── //
               <motion.div
@@ -391,24 +428,59 @@ function ContactForm() {
                 exit={{ opacity: 0 }}
               >
                 <div className="mb-1">
-                  <h3 className="text-xl font-bold text-white">Envoie-moi un message</h3>
-                  <p className="text-slate-600 text-sm mt-1">Tous les champs sont requis.</p>
+                  <h3 className="text-xl font-bold text-white">
+                    Envoie-moi un message
+                  </h3>
+                  <p className="text-slate-600 text-sm mt-1">
+                    Tous les champs sont requis.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <Field label="Nom complet"    id="name"    placeholder="Foukeng bavel"         value={form.name}    onChange={handleChange} error={errors.name} />
-                  <Field label="Adresse email"  id="email"   placeholder="founkengbavel@gmail.com"       value={form.email}   onChange={handleChange} error={errors.email} type="email" />
+                  <Field
+                    label="Nom complet"
+                    id="name"
+                    placeholder="Foukeng bavel"
+                    value={form.name}
+                    onChange={handleChange}
+                    error={errors.name}
+                  />
+                  <Field
+                    label="Adresse email"
+                    id="email"
+                    placeholder="founkengbavel@gmail.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                    type="email"
+                  />
                 </div>
-                <Field label="Sujet"    id="subject" placeholder="Mission freelance / Question" value={form.subject}  onChange={handleChange} error={errors.subject} />
-                <Field label="Message"  id="message" placeholder="Décris ton projet…"           value={form.message}  onChange={handleChange} error={errors.message} multiline />
+                <Field
+                  label="Sujet"
+                  id="subject"
+                  placeholder="Mission freelance / Question"
+                  value={form.subject}
+                  onChange={handleChange}
+                  error={errors.subject}
+                />
+                <Field
+                  label="Message"
+                  id="message"
+                  placeholder="Décris ton projet…"
+                  value={form.message}
+                  onChange={handleChange}
+                  error={errors.message}
+                  multiline
+                />
 
                 {/* Erreur globale */}
                 <AnimatePresence>
                   {status === "error" && (
                     <motion.p
-                      className="flex items-center gap-2 text-sm text-red-400
-                                 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3"
-                      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="flex items-center gap-2 text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
                     >
                       <AlertCircle size={14} />
                       Une erreur s'est produite. Réessaie dans un instant.
@@ -420,30 +492,42 @@ function ContactForm() {
                 <motion.button
                   onClick={handleSubmit}
                   disabled={status === "loading"}
-                  className={`relative overflow-hidden flex items-center justify-center gap-2.5
-                              px-6 py-3.5 rounded-xl font-bold text-sm bg-cyan-400 text-[#08091a]
-                              ${status === "loading" ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
-                  whileHover={status !== "loading" ? { scale: 1.02, y: -1 } : {}}
+                  className={`relative overflow-hidden flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm bg-cyan-400 text-[#08091a] ${status === "loading" ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+                  whileHover={
+                    status !== "loading" ? { scale: 1.02, y: -1 } : {}
+                  }
                   whileTap={status !== "loading" ? { scale: 0.98 } : {}}
                   transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 >
-                  {/* Shimmer */}
                   <motion.span
                     className="absolute inset-0 pointer-events-none"
                     aria-hidden
                   >
                     <motion.span
                       className="absolute inset-y-0 w-1/3"
-                      style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)" }}
+                      style={{
+                        background:
+                          "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                      }}
                       animate={{ left: ["-33%", "133%"] }}
-                      transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1 }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        repeatDelay: 1,
+                      }}
                     />
                   </motion.span>
 
-                  {status === "loading"
-                    ? <><Loader2 size={16} className="animate-spin" /> Envoi en cours…</>
-                    : <><Send size={15} strokeWidth={2} /> Envoyer le message</>
-                  }
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" /> Envoi en
+                      cours…
+                    </>
+                  ) : (
+                    <>
+                      <Send size={15} strokeWidth={2} /> Envoyer le message
+                    </>
+                  )}
                 </motion.button>
               </motion.div>
             )}
@@ -451,28 +535,25 @@ function ContactForm() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
 //  7. COMPOSANT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────
 export default function Contact() {
-  const titleRef      = useRef<HTMLDivElement>(null)
-  const isTitleInView = useInView(titleRef, { once: true })
+  const titleRef = useRef<HTMLDivElement>(null);
+  const isTitleInView = useInView(titleRef, { once: true });
 
   return (
     <section
       id="contact"
       className="relative min-h-screen bg-[#08091a] py-28 px-6 overflow-hidden"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64
-                      rounded-full bg-cyan-500/[0.05] blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80
-                      rounded-full bg-purple-500/[0.04] blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 rounded-full bg-cyan-500/[0.05] blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-purple-500/[0.04] blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
-
         {/* Titre */}
         <motion.div
           ref={titleRef}
@@ -483,7 +564,9 @@ export default function Contact() {
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Mail size={14} className="text-cyan-400" />
-            <p className="text-[11px] text-cyan-400/70 uppercase tracking-[0.22em]">Get in touch</p>
+            <p className="text-[11px] text-cyan-400/70 uppercase tracking-[0.22em]">
+              Get in touch
+            </p>
           </div>
           <h2 className="text-4xl lg:text-5xl font-extrabold text-white">
             Me{" "}
@@ -518,5 +601,5 @@ export default function Contact() {
         </p>
       </motion.div>
     </section>
-  )
+  );
 }
