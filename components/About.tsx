@@ -1,13 +1,25 @@
-"use client"
+"use client";
 
-
-import { useRef, useState } from "react"
-import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion"
+import { useRef, useState } from "react";
 import {
-  GraduationCap, Briefcase, Award, Download, GitCommit, Terminal, Zap,
-} from "lucide-react"
-
-import { MapPin } from "lucide-react";
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+  useSpring,
+  Variants,
+} from "framer-motion";
+import {
+  GraduationCap,
+  Briefcase,
+  Award,
+  Download,
+  GitCommit,
+  Terminal,
+  Zap,
+  MapPin,
+  LucideIcon,
+} from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────
 //  1. DONNÉES
@@ -53,47 +65,71 @@ const TIMELINE = [
     icon: GraduationCap,
     color: "#fb923c",
   },
-]
+];
 
 const STATS = [
-  { icon: GitCommit, value: "100+", label: "Commits GitHub",     color: "#a78bfa" },
-  { icon: GraduationCap, value: "Bac+2", label: "Niveau d'études",   color: "#f472b6" },
-  { icon: Terminal, value: "3+",    label: "Technos maîtrisées",  color: "#fb923c" },
-  { icon: Zap,     value: "1+",  label: "Ans d'expérience",  color: "#818cf8" },
-]
+  { icon: GitCommit, value: "100+", label: "Commits GitHub", color: "#a78bfa" },
+  {
+    icon: GraduationCap,
+    value: "Bac+2",
+    label: "Niveau d'études",
+    color: "#f472b6",
+  },
+  {
+    icon: Terminal,
+    value: "3+",
+    label: "Technos maîtrisées",
+    color: "#fb923c",
+  },
+  { icon: Zap, value: "1+", label: "Ans d'expérience", color: "#818cf8" },
+];
 
 const INTERESTS = ["Next js", "Figma", "Photography", "Gaming", "Photoshop"];
 
 // ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES D'ANIMATION
+//  2. VARIANTES D'ANIMATION (Corrigées avec "as const" ou typage explicite)
 // ─────────────────────────────────────────────────────────────────
-const titleVariants = {
-  hidden:  { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
-}
-
-const fadeUpVariants = {
-  hidden:  { opacity: 0, y: 32, filter: "blur(4px)" },
+const titleVariants: Variants = {
+  hidden: { opacity: 0, y: 28 },
   visible: {
-    opacity: 1, y: 0, filter: "blur(0px)",
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const fadeUpVariants: Variants = {
+  hidden: { opacity: 0, y: 32, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
-}
+};
 
-const timelineItemVariants = {
-  hidden:  { opacity: 0, x: -24 },
+const timelineItemVariants: Variants = {
+  hidden: { opacity: 0, x: -24 },
   visible: {
-    opacity: 1, x: 0,
+    opacity: 1,
+    x: 0,
     transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
   },
-}
+};
 
 // ─────────────────────────────────────────────────────────────────
-//  3. SUB-COMPOSANT — Stat animée (compteur + icône)
+//  3. SUB-COMPOSANT — Stat animée
 // ─────────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, value, label, color }: typeof STATS[number]) {
-  const ref      = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true })
+interface StatCardProps {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  color: string;
+}
+
+function StatCard({ icon: Icon, value, label, color }: StatCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true });
 
   return (
     <motion.div
@@ -103,14 +139,20 @@ function StatCard({ icon: Icon, value, label, color }: typeof STATS[number]) {
                  hover:border-white/[0.12] transition-colors duration-300"
       initial={{ opacity: 0, scale: 0.85 }}
       animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+      transition={{
+        duration: 0.5,
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      }}
       whileHover={{ y: -4 }}
     >
-      {/* Halo au survol */}
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
                    transition-opacity duration-500 pointer-events-none"
-        style={{ background: `radial-gradient(circle at 50% 0%, ${color}10, transparent 70%)` }}
+        style={{
+          background: `radial-gradient(circle at 50% 0%, ${color}10, transparent 70%)`,
+        }}
       />
       <div
         className="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -119,19 +161,33 @@ function StatCard({ icon: Icon, value, label, color }: typeof STATS[number]) {
         <Icon size={18} style={{ color }} strokeWidth={1.5} />
       </div>
       <p className="text-3xl font-extrabold text-white">{value}</p>
-      <p className="text-xs text-slate-500 text-center tracking-wide">{label}</p>
+      <p className="text-xs text-slate-500 text-center tracking-wide">
+        {label}
+      </p>
     </motion.div>
-  )
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
 //  4. SUB-COMPOSANT — Item de la timeline
 // ─────────────────────────────────────────────────────────────────
-function TimelineItem({
-  item, index, isLast,
-}: { item: typeof TIMELINE[number]; index: number; isLast: boolean }) {
-  const ref      = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" })
+interface TimelineItemProps {
+  item: {
+    year: string;
+    type: string;
+    title: string;
+    company: string;
+    description: string;
+    icon: LucideIcon;
+    color: string;
+  };
+  index: number;
+  isLast: boolean;
+}
+
+function TimelineItem({ item, index, isLast }: TimelineItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
   return (
     <motion.div
@@ -142,28 +198,34 @@ function TimelineItem({
       animate={isInView ? "visible" : "hidden"}
       transition={{ delay: index * 0.08 }}
     >
-      {/* ── Ligne verticale + Point ────────────────────────── */}
       <div className="flex flex-col items-center flex-shrink-0">
-        {/* Point coloré */}
         <motion.div
-          className="relative w-10 h-10 rounded-xl flex items-center justify-center z-10
-                     border"
+          className="relative w-10 h-10 rounded-xl flex items-center justify-center z-10 border"
           style={{
             background: `${item.color}15`,
             borderColor: `${item.color}35`,
           }}
           initial={{ scale: 0, rotate: -20 }}
           animate={isInView ? { scale: 1, rotate: 0 } : {}}
-          transition={{ delay: index * 0.08 + 0.1, type: "spring", stiffness: 300 }}
+          transition={{
+            delay: index * 0.08 + 0.1,
+            type: "spring",
+            stiffness: 300,
+          }}
         >
-          <item.icon size={16} style={{ color: item.color }} strokeWidth={1.5} />
+          <item.icon
+            size={16}
+            style={{ color: item.color }}
+            strokeWidth={1.5}
+          />
         </motion.div>
 
-        {/* Ligne verticale (sauf pour le dernier) */}
         {!isLast && (
           <motion.div
             className="w-px flex-1 mt-2"
-            style={{ background: `linear-gradient(to bottom, ${item.color}30, transparent)` }}
+            style={{
+              background: `linear-gradient(to bottom, ${item.color}30, transparent)`,
+            }}
             initial={{ scaleY: 0, originY: 0 }}
             animate={isInView ? { scaleY: 1 } : {}}
             transition={{ delay: index * 0.08 + 0.3, duration: 0.6 }}
@@ -171,39 +233,39 @@ function TimelineItem({
         )}
       </div>
 
-      {/* ── Contenu ───────────────────────────────────────── */}
       <div className="pb-10 flex-1 min-w-0">
-        {/* Année */}
         <span
-          className="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-md mb-2
-                     uppercase tracking-widest"
+          className="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-md mb-2 uppercase tracking-widest"
           style={{ background: `${item.color}18`, color: item.color }}
         >
           {item.year}
         </span>
 
-        <h4 className="text-base font-bold text-white leading-snug">{item.title}</h4>
+        <h4 className="text-base font-bold text-white leading-snug">
+          {item.title}
+        </h4>
         <p className="text-sm text-slate-500 mt-0.5 mb-2">{item.company}</p>
-        <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          {item.description}
+        </p>
       </div>
     </motion.div>
-  )
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
-//  5. SUB-COMPOSANT — Colonne gauche (photo + description perso)
+//  5. SUB-COMPOSANT — Colonne gauche
 // ─────────────────────────────────────────────────────────────────
 function AboutIntro() {
-  const ref      = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" })
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
-  // Parallax sur la photo au scroll
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
-  })
-  const rawY = useTransform(scrollYProgress, [0, 1], [40, -40])
-  const y    = useSpring(rawY, { stiffness: 80, damping: 22 })
+  });
+  const rawY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const y = useSpring(rawY, { stiffness: 80, damping: 22 });
 
   return (
     <motion.div
@@ -213,13 +275,10 @@ function AboutIntro() {
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Photo avec parallax */}
       <motion.div
-        className="relative aspect-[4/3] rounded-3xl overflow-hidden
-                   bg-white/[0.03] border border-white/[0.06]"
+        className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.06]"
         style={{ y }}
       >
-        {/* Grille déco */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -228,29 +287,23 @@ function AboutIntro() {
             backgroundSize: "24px 24px",
           }}
         />
-        {/* Placeholder photo — remplace par <Image src="/about.jpg" ... /> */}
-        <div
-          className="absolute inset-0 flex items-center justify-center
-                        bg-gradient-to-br from-cyan-900/40 via-[#08091a] to-purple-900/30"
-        >
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-900/40 via-[#08091a] to-purple-900/30">
           <motion.div
-            className="w-24 h-24 rounded-2xl bg-cyan-400/10 border border-cyan-400/20
-                       flex items-center justify-center"
+            className="w-24 h-24 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center"
             animate={{ rotate: [0, 3, -3, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           >
-            <span className="text-cyan-400 font-extrabold text-[15px]">FKBF</span>
+            <span className="text-cyan-400 font-extrabold text-[15px]">
+              FKBF
+            </span>
           </motion.div>
         </div>
 
-        {/* Badge localisation */}
         <motion.a
           href="https://maps.app.goo.gl/wjVYfMhqFM3VpgKM6?g_st=aw"
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute bottom-4 left-4 flex items-center gap-2
-             bg-[#0d1030]/80 backdrop-blur-md border border-white/10
-             rounded-2xl px-4 py-2.5 text-sm hover:border-cyan-400/30 transition-colors"
+          className="absolute bottom-4 left-4 flex items-center gap-2 bg-[#0d1030]/80 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-2.5 text-sm hover:border-cyan-400/30 transition-colors"
           initial={{ opacity: 0, y: 12 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.5 }}
@@ -261,14 +314,10 @@ function AboutIntro() {
         </motion.a>
       </motion.div>
 
-      {/* Texte de présentation */}
       <div className="space-y-4">
         <h3 className="text-xl font-extrabold text-white">
           Passionné de code &{" "}
-          <span
-            className="text-transparent bg-clip-text
-                           bg-gradient-to-r from-cyan-400 to-blue-500"
-          >
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
             de design
           </span>
         </h3>
@@ -284,7 +333,6 @@ function AboutIntro() {
         </p>
       </div>
 
-      {/* Centres d'intérêt */}
       <div>
         <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] mb-3">
           Centres d'intérêt
@@ -293,8 +341,7 @@ function AboutIntro() {
           {INTERESTS.map((interest, i) => (
             <motion.span
               key={interest}
-              className="px-3 py-1 text-xs text-slate-400 rounded-lg
-                         bg-white/[0.04] border border-white/[0.06]"
+              className="px-3 py-1 text-xs text-slate-400 rounded-lg bg-white/[0.04] border border-white/[0.06]"
               initial={{ opacity: 0, scale: 0.75 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.3 + i * 0.04, duration: 0.3 }}
@@ -311,13 +358,10 @@ function AboutIntro() {
         </div>
       </div>
 
-      {/* Bouton CV */}
       <motion.a
         href="/docs/FOUKENG-KEMAYOU-BAVEL-FRANCK-DEVELOPPEUR-WEB.pdf"
-        download = "FOUKENG-KEMAYOU-BAVEL-FRANCK-DEVELOPPEUR-WEB.pdf"
-        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl
-                   bg-white/[0.05] border border-white/15 text-white
-                   font-semibold text-sm self-start"
+        download="FOUKENG-KEMAYOU-BAVEL-FRANCK-DEVELOPPEUR-WEB.pdf"
+        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.05] border border-white/15 text-white font-semibold text-sm self-start"
         whileHover={{
           scale: 1.04,
           y: -2,
@@ -337,25 +381,21 @@ function AboutIntro() {
 //  6. COMPOSANT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────
 export default function About() {
-  const titleRef      = useRef<HTMLDivElement>(null)
-  const isTitleInView = useInView(titleRef, { once: true })
-  const statsRef      = useRef<HTMLDivElement>(null)
-  const isStatsInView = useInView(statsRef, { once: true })
+  const titleRef = useRef<HTMLDivElement>(null);
+  const isTitleInView = useInView(titleRef, { once: true });
+  const statsRef = useRef<HTMLDivElement>(null);
+  const isStatsInView = useInView(statsRef, { once: true });
 
   return (
     <section
       id="about"
       className="relative min-h-screen bg-[#08091a] py-28 px-6 overflow-hidden"
     >
-      {/* Fonds lumineux */}
-      <div className="absolute top-1/4 right-0 w-96 h-96
-                      rounded-full bg-purple-500/[0.04] blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-80 h-80
-                      rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-purple-500/[0.04] blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-20">
-
-        {/* ── Titre ─────────────────────────────────────────── */}
+        {/* Titre */}
         <motion.div
           ref={titleRef}
           className="text-center"
@@ -368,17 +408,17 @@ export default function About() {
           </p>
           <h2 className="text-4xl lg:text-5xl font-extrabold text-white">
             À{" "}
-            <span className="text-transparent bg-clip-text
-                             bg-gradient-to-r from-cyan-400 to-blue-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
               propos
             </span>
           </h2>
           <p className="text-slate-500 mt-4 max-w-md mx-auto text-sm leading-relaxed">
-            Un peu de contexte sur mon parcours, ma façon de travailler et ce qui m'anime.
+            Un peu de contexte sur mon parcours, ma façon de travailler et ce
+            qui m'anime.
           </p>
         </motion.div>
 
-        {/* ── Stats ─────────────────────────────────────────── */}
+        {/* Stats */}
         <motion.div
           ref={statsRef}
           className="grid grid-cols-2 md:grid-cols-4 gap-4"
@@ -391,7 +431,7 @@ export default function About() {
           ))}
         </motion.div>
 
-        {/* ── Grid : intro (gauche) + timeline (droite) ─────── */}
+        {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
           <AboutIntro />
 
@@ -421,5 +461,5 @@ export default function About() {
         </div>
       </div>
     </section>
-  )
+  );
 }

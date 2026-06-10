@@ -2,11 +2,11 @@
 
 // ╔══════════════════════════════════════════════════════════════════╗
 //  Contact.tsx — Formulaire de contact fonctionnel avec Resend
-//  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
+//  Stack   : Next.js App Router + Framer Motion + Tailwind CSS
 // ╚══════════════════════════════════════════════════════════════════╝
 
 import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence, Variants } from "framer-motion";
 import {
   Mail,
   MapPin,
@@ -17,14 +17,31 @@ import {
   Loader2,
 } from "lucide-react";
 
-const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+// Interface pour étendre les props SVG standards avec la propriété size
+interface CustomIconProps extends React.SVGProps<SVGSVGElement> {
+  size?: number;
+}
+
+const GithubIcon = ({ size = 24, ...props }: CustomIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width={size}
+    height={size}
+    {...props}
+  >
     <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.446-1.27.098-2.646 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.91-1.294 2.75-1.025 2.75-1.025.544 1.376.202 2.393.1 2.646.64.698 1.026 1.591 1.026 2.682 0 3.841-2.338 4.687-4.566 4.934.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10 10 0 0022 12c0-5.523-4.477-10-10-10z" />
   </svg>
 );
 
-const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+const LinkedinIcon = ({ size = 24, ...props }: CustomIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width={size}
+    height={size}
+    {...props}
+  >
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.35V9.357h3.414v1.521h.049c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.369zM5.337 7.433a2.064 2.064 0 01-2.063-2.065 2.064 2.064 0 012.063-2.063 2.065 2.065 0 012.064 2.063 2.064 2.064 0 01-2.064 2.065zm1.782 13.019H3.555V9.357h3.564v11.095zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.226.792 24 1.771 24h20.451C23.205 24 24 23.226 24 22.271V1.729C24 .774 23.205 0 22.225 0z" />
   </svg>
 );
@@ -98,7 +115,7 @@ function validate(data: FormData): FieldErr {
 // ─────────────────────────────────────────────────────────────────
 //  3. VARIANTES
 // ─────────────────────────────────────────────────────────────────
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
@@ -349,7 +366,6 @@ function ContactForm() {
     setStatus("loading");
 
     try {
-      // VRAI APPEL API : Envoi des données vers notre route backend Route Handler
       const response = await fetch("/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -380,7 +396,6 @@ function ContactForm() {
 
         <div className="relative z-10 p-8">
           <AnimatePresence mode="wait">
-            {/* ── État succès ─────────────────────────────── */}
             {status === "success" ? (
               <motion.div
                 key="success"
@@ -419,7 +434,6 @@ function ContactForm() {
                 </motion.button>
               </motion.div>
             ) : (
-              // ── Formulaire ──────────────────────────────── //
               <motion.div
                 key="form"
                 className="flex flex-col gap-5"
@@ -473,7 +487,6 @@ function ContactForm() {
                   multiline
                 />
 
-                {/* Erreur globale */}
                 <AnimatePresence>
                   {status === "error" && (
                     <motion.p
@@ -488,7 +501,6 @@ function ContactForm() {
                   )}
                 </AnimatePresence>
 
-                {/* Bouton */}
                 <motion.button
                   onClick={handleSubmit}
                   disabled={status === "loading"}

@@ -2,11 +2,11 @@
 
 // ╔══════════════════════════════════════════════════════════════════╗
 //  Blog.tsx — Journal de bord et Partage d'Expériences
-//  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
+//  Stack   : Next.js App Router + Framer Motion + Tailwind CSS
 // ╚══════════════════════════════════════════════════════════════════╝
 
 import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence, Variants } from "framer-motion";
 import { ArrowUpRight, Clock, BookOpen, Rss } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────
@@ -82,10 +82,26 @@ const POSTS = [
   },
 ];
 
+// Type d'un article pour sécuriser les sous-composants
+interface PostProps {
+  post: {
+    id: number;
+    title: string;
+    excerpt: string;
+    category: string;
+    date: string;
+    readTime: string;
+    featured: boolean;
+    accentColor: string;
+    gradient: string;
+    tags: string[];
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES
+//  2. VARIANTES D'ANIMATION TYPÉES EXPLICITEMENT
 // ─────────────────────────────────────────────────────────────────
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
@@ -94,12 +110,12 @@ const titleVariants = {
   },
 };
 
-const listVariants = {
+const listVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 36, filter: "blur(6px)" },
   visible: {
     opacity: 1,
@@ -113,7 +129,7 @@ const cardVariants = {
 // ─────────────────────────────────────────────────────────────────
 //  3. SUB-COMPOSANT — Carte featured
 // ─────────────────────────────────────────────────────────────────
-function FeaturedPost({ post }: { post: (typeof POSTS)[number] }) {
+function FeaturedPost({ post }: PostProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
@@ -130,7 +146,7 @@ function FeaturedPost({ post }: { post: (typeof POSTS)[number] }) {
     >
       <div
         className={`absolute inset-0 bg-gradient-to-br ${post.gradient} opacity-60
-                       group-hover:opacity-90 transition-opacity duration-500`}
+                   group-hover:opacity-90 transition-opacity duration-500`}
       />
 
       <div className="relative z-10 p-8 md:p-10 grid md:grid-cols-2 gap-8 items-center">
@@ -209,7 +225,7 @@ function FeaturedPost({ post }: { post: (typeof POSTS)[number] }) {
 // ─────────────────────────────────────────────────────────────────
 //  4. SUB-COMPOSANT — Carte article standard
 // ─────────────────────────────────────────────────────────────────
-function BlogCard({ post }: { post: (typeof POSTS)[number] }) {
+function BlogCard({ post }: PostProps) {
   return (
     <motion.article
       layout
@@ -263,7 +279,7 @@ function BlogCard({ post }: { post: (typeof POSTS)[number] }) {
 
         <div
           className="flex items-center justify-between pt-2 mt-auto
-                        border-t border-white/[0.05]"
+                                 border-t border-white/[0.05]"
         >
           <span className="flex items-center gap-1.5 text-[11px] text-slate-600">
             <Clock size={11} /> {post.readTime}
@@ -281,8 +297,6 @@ function BlogCard({ post }: { post: (typeof POSTS)[number] }) {
     </motion.article>
   );
 }
-
-
 
 // ─────────────────────────────────────────────────────────────────
 //  5. COMPOSANT PRINCIPAL
@@ -306,11 +320,11 @@ export default function Blog() {
     >
       <div
         className="absolute top-1/4 left-0 w-96 h-96 rounded-full
-                      bg-cyan-500/[0.04] blur-[120px] pointer-events-none"
+                       bg-cyan-500/[0.04] blur-[120px] pointer-events-none"
       />
       <div
         className="absolute bottom-1/4 right-0 w-96 h-96 rounded-full
-                      bg-purple-500/[0.04] blur-[120px] pointer-events-none"
+                       bg-purple-500/[0.04] blur-[120px] pointer-events-none"
       />
 
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -332,7 +346,7 @@ export default function Blog() {
             Mon Spécimen{" "}
             <span
               className="text-transparent bg-clip-text
-                             bg-gradient-to-r from-cyan-400 to-blue-500"
+                               bg-gradient-to-r from-cyan-400 to-blue-500"
             >
               DevLog
             </span>

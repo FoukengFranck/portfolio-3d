@@ -12,6 +12,7 @@ import {
   useScroll,
   useTransform,
   useSpring,
+  Variants, // <-- Importation du type pour corriger l'erreur TypeScript
 } from "framer-motion";
 import {
   Code2,
@@ -46,11 +47,11 @@ const TOOLS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES D'ANIMATION
+//  2. VARIANTES D'ANIMATION (Typées explicitement)
 // ─────────────────────────────────────────────────────────────────
 
 // Parent → délai en cascade entre ses enfants
-const listVariants = {
+const listVariants: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.09, delayChildren: 0.05 },
@@ -58,7 +59,7 @@ const listVariants = {
 };
 
 // Enfant → entre depuis la gauche avec blur
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, x: -28, filter: "blur(4px)" },
   visible: {
     opacity: 1,
@@ -69,7 +70,7 @@ const cardVariants = {
 };
 
 // Titre de section
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
@@ -80,12 +81,6 @@ const titleVariants = {
 
 // ─────────────────────────────────────────────────────────────────
 //  3. HOOK — Compteur animé de 0 → target
-//
-//  Principe :
-//  • Ne démarre que lorsque `active` (= isInView) devient true
-//  • setInterval incrémente un compteur à ~60fps
-//  • S'arrête une fois `target` atteint
-//  • La durée correspond à celle de la barre (synchronisé)
 // ─────────────────────────────────────────────────────────────────
 function useCountUp(target: number, active: boolean, durationMs = 1400) {
   const [count, setCount] = useState(0);
@@ -119,16 +114,6 @@ function useCountUp(target: number, active: boolean, durationMs = 1400) {
 // ─────────────────────────────────────────────────────────────────
 function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
   const ref = useRef<HTMLDivElement>(null);
-
-  // ┌───────────────────────────────────────────────────────────┐
-  // │  useInView — LE SCROLL TRIGGER DE FRAMER MOTION           │
-  // │                                                           │
-  // │  Retourne true dès que l'élément `ref` entre dans         │
-  // │  le viewport. C'est ce booléen qui déclenche l'animation. │
-  // │                                                           │
-  // │  once: true  → ne repasse pas à false en scrollant        │
-  // │  margin      → anticipe de 60px avant l'entrée complète   │
-  // └───────────────────────────────────────────────────────────┘
   const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
   const count = useCountUp(level, isInView);
 
@@ -163,23 +148,12 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
           </div>
           <span className="text-sm font-semibold text-slate-300">{name}</span>
         </div>
-        {/* Compteur qui monte en même temps que la barre */}
         <span className="text-sm font-bold tabular-nums" style={{ color }}>
           {count}%
         </span>
       </div>
 
-      {/* ── Barre de progression ──────────────────────────────
-          ★ C'est ici le scroll animation principal ★
-          
-          initial={{ width: "0%" }}   → part de zéro
-          animate={{ width: isInView  → se remplit quand visible
-            ? `${level}%`
-            : "0%" }}
-          
-          Quand useInView passe à true → Framer Motion lance
-          l'animation de 0% vers level% automatiquement.
-      ────────────────────────────────────────────────────────── */}
+      {/* Barre de progression */}
       <div className="relative h-[5px] bg-white/[0.06] rounded-full overflow-hidden">
         {/* Barre principale */}
         <motion.div
@@ -189,12 +163,12 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
           animate={{ width: isInView ? `${level}%` : "0%" }}
           transition={{
             duration: 1.4,
-            ease: [0.22, 1, 0.36, 1], // expo out : rapide puis ralentit
+            ease: [0.22, 1, 0.36, 1],
             delay: 0.15,
           }}
         />
 
-        {/* Shimmer : reflet lumineux qui glisse sur la barre */}
+        {/* Shimmer */}
         <motion.div
           className="absolute inset-y-0 w-1/4 rounded-full"
           style={{
@@ -219,7 +193,7 @@ function SkillsIntro() {
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"], // de "entré" à "sorti" du viewport
+    offset: ["start end", "end start"],
   });
   const rawY = useTransform(scrollYProgress, [0, 1], [50, -50]);
   const parallaxY = useSpring(rawY, { stiffness: 80, damping: 22 });
@@ -237,9 +211,8 @@ function SkillsIntro() {
         className="relative aspect-square max-w-xs mx-auto w-full
                    rounded-3xl overflow-hidden bg-white/[0.02]
                    border border-white/[0.06] flex items-center justify-center"
-        style={{ y: parallaxY }} // ← l'illustration bouge à une vitesse différente
+        style={{ y: parallaxY }}
       >
-        {/* Grille décorative */}
         <div
           className="absolute inset-0 opacity-[0.045]"
           style={{
@@ -268,7 +241,7 @@ function SkillsIntro() {
         </p>
       </div>
 
-      {/* Outils — badges avec apparition décalée */}
+      {/* Outils */}
       <div>
         <p className="text-[10px] text-slate-600 uppercase tracking-[0.2em] mb-3">
           Tools & Ecosystem
@@ -307,7 +280,6 @@ function OrbitingIcons() {
 
   return (
     <div className="relative w-48 h-48">
-      {/* Le conteneur tourne */}
       <motion.div
         className="absolute inset-0"
         animate={{ rotate: 360 }}
@@ -326,7 +298,6 @@ function OrbitingIcons() {
                 left: `calc(50% + ${x}px - 18px)`,
                 top: `calc(50% + ${y}px - 18px)`,
               }}
-              // Contre-rotation : les icônes restent droites
               animate={{ rotate: -360 }}
               transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
             >
@@ -336,7 +307,6 @@ function OrbitingIcons() {
         })}
       </motion.div>
 
-      {/* Centre de l'orbite */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="w-16 h-16 rounded-2xl bg-cyan-400/10 border border-cyan-400/20
@@ -364,15 +334,15 @@ export default function Skills() {
       {/* Fonds lumineux */}
       <div
         className="absolute top-0 right-0 w-[28rem] h-[28rem]
-                      rounded-full bg-blue-600/[0.04] blur-[130px] pointer-events-none"
+                       rounded-full bg-blue-600/[0.04] blur-[130px] pointer-events-none"
       />
       <div
         className="absolute bottom-0 left-0 w-96 h-96
-                      rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none"
+                       rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none"
       />
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* ── Titre ──────────────────────────────────────────── */}
+        {/* Titre */}
         <motion.div
           ref={titleRef}
           className="text-center mb-16"
@@ -398,11 +368,7 @@ export default function Skills() {
           </p>
         </motion.div>
 
-        {/* ── Grid ─────────────────────────────────────────────
-            whileInView = raccourci pour animer dès que l'élément
-            entre dans le viewport (équivalent à isInView + animate)
-            viewport.once = ne rejoue pas si on scroll en arrière
-        ─────────────────────────────────────────────────────── */}
+        {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Colonne gauche : barres de compétences */}
           <motion.div

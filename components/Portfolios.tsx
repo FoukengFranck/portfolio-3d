@@ -12,18 +12,23 @@ import {
   AnimatePresence,
   useScroll,
   useTransform,
+  Variants,
 } from "framer-motion";
-import {
-  ExternalLink,
-  X,
-  ArrowUpRight,
-  Folder,
-  Star,
-  Eye,
-} from "lucide-react";
+import { ExternalLink, X, ArrowUpRight, Folder, Star, Eye } from "lucide-react";
 
-const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+// On crée une interface qui étend les propriétés SVG de base en ajoutant "size"
+interface GithubIconProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+}
+
+const GithubIcon = ({ size = 24, ...props }: GithubIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width={size} // Utilise la prop size pour la largeur
+    height={size} // Utilise la prop size pour la hauteur
+    {...props}
+  >
     <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.446-1.27.098-2.646 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.91-1.294 2.75-1.025 2.75-1.025.544 1.376.202 2.393.1 2.646.64.698 1.026 1.591 1.026 2.682 0 3.841-2.338 4.687-4.566 4.934.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10 10 0 0022 12c0-5.523-4.477-10-10-10z" />
   </svg>
 );
@@ -44,6 +49,7 @@ type Project = {
   demoUrl: string;
   githubUrl: string;
   year: string;
+  stars?: number; // Optionnel ou à adapter selon vos besoins
 };
 
 const CATEGORIES = ["All", "React.js", "Laravel", "PHP", "JavaScript"];
@@ -61,9 +67,10 @@ const PROJECTS: Project[] = [
     gradient: "from-cyan-500/25 via-blue-600/15 to-transparent",
     accentColor: "#22d3ee",
     featured: true,
-    demoUrl: "https://fkbfkamerlink.onrender.com/", // Projet hébergé !
+    demoUrl: "https://fkbfkamerlink.onrender.com/",
     githubUrl: "https://github.com/FoukengFranck/fkbfkamerlink.git",
     year: "2025 - 2026",
+    stars: 0,
   },
   {
     id: 2,
@@ -77,9 +84,10 @@ const PROJECTS: Project[] = [
     gradient: "from-purple-500/20 via-pink-600/10 to-transparent",
     accentColor: "#818cf8",
     featured: false,
-    demoUrl: "", // PAS DE DÉMO
+    demoUrl: "",
     githubUrl: "https://github.com/FoukengFranck/FRCVBank.git",
     year: "2025",
+    stars: 0,
   },
   {
     id: 3,
@@ -93,9 +101,10 @@ const PROJECTS: Project[] = [
     gradient: "from-emerald-500/20 via-teal-600/10 to-transparent",
     accentColor: "#34d399",
     featured: false,
-    demoUrl: "", // PAS DE DÉMO
+    demoUrl: "",
     githubUrl: "https://github.com/FoukengFranck/Calculatrice.git",
     year: "2025",
+    stars: 0,
   },
   {
     id: 4,
@@ -109,9 +118,10 @@ const PROJECTS: Project[] = [
     gradient: "from-orange-500/20 via-amber-600/10 to-transparent",
     accentColor: "#fb923c",
     featured: false,
-    demoUrl: "", // PAS DE DÉMO
+    demoUrl: "",
     githubUrl: "https://github.com/FoukengFranck/Suivie-Medicale.git",
     year: "2025",
+    stars: 0,
   },
   {
     id: 5,
@@ -128,8 +138,8 @@ const PROJECTS: Project[] = [
     demoUrl: "https://ornate-donut-a55c0e.netlify.app/",
     githubUrl: "https://github.com/FoukengFranck/Gestion-tache.git",
     year: "2025",
+    stars: 0,
   },
-
   {
     id: 6,
     title: "Génerateur d'avatar alpaga",
@@ -144,13 +154,14 @@ const PROJECTS: Project[] = [
     demoUrl: "generateur-avatar-alpaca.netlify.app",
     githubUrl: "https://github.com/FoukengFranck/Alpaca-Avatar.git",
     year: "2025",
+    stars: 0,
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES D'ANIMATION
+//  2. VARIANTES D'ANIMATION (Typées explicitement avec 'Variants')
 // ─────────────────────────────────────────────────────────────────
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
@@ -159,7 +170,7 @@ const titleVariants = {
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 36, filter: "blur(6px)" },
   visible: {
     opacity: 1,
@@ -170,7 +181,7 @@ const cardVariants = {
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.25 } },
 };
 
-const listVariants = {
+const listVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
@@ -186,17 +197,15 @@ function ProjectModal({
   onClose: () => void;
 }) {
   return (
-    // Overlay sombre
     <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose} // ferme en cliquant sur le fond
+      onClick={onClose}
     >
       <div className="absolute inset-0 bg-[#08091a]/85 backdrop-blur-md" />
 
-      {/* Carte modale */}
       <motion.div
         className="relative z-10 w-full max-w-2xl rounded-3xl overflow-hidden
                    bg-[#0d1030] border border-white/[0.08] shadow-2xl"
@@ -204,9 +213,8 @@ function ProjectModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: 32 }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        onClick={(e) => e.stopPropagation()} // empêche la fermeture sur clic carte
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Dégradé en fond */}
         <div
           className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-60`}
         />
@@ -218,7 +226,6 @@ function ProjectModal({
         />
 
         <div className="relative z-10 p-8">
-          {/* Header */}
           <div className="flex items-start justify-between mb-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -239,7 +246,6 @@ function ProjectModal({
                 {project.title}
               </h3>
             </div>
-            {/* Bouton fermer */}
             <motion.button
               className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/10
                          flex items-center justify-center text-slate-400
@@ -252,24 +258,10 @@ function ProjectModal({
             </motion.button>
           </div>
 
-          {/* Description complète */}
           <p className="text-slate-300 leading-relaxed mb-6">
             {project.fullDesc}
           </p>
 
-          {/* Métriques */}
-          {/* <div className="flex gap-6 mb-6">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Star size={14} className="text-yellow-400" fill="currentColor" />
-              <span>{project.stars} stars</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Eye size={14} />
-              <span>{project.views} vues</span>
-            </div>
-          </div> */}
-
-          {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-8">
             {project.tags.map((tag) => (
               <span
@@ -282,7 +274,6 @@ function ProjectModal({
             ))}
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3">
             {project.demoUrl && (
               <motion.a
@@ -360,11 +351,10 @@ function FeaturedProjectCard({
       >
         <div
           className={`absolute inset-0 bg-gradient-to-br ${project.gradient}
-                         group-hover:opacity-[1.3] transition-opacity duration-500`}
+                       group-hover:opacity-[1.3] transition-opacity duration-500`}
         />
 
         <div className="relative z-10 p-8 md:p-10 grid md:grid-cols-5 gap-8 items-center">
-          {/* Texte — 3 colonnes */}
           <div className="md:col-span-3 flex flex-col gap-5">
             <div className="flex items-center gap-3">
               <span
@@ -385,19 +375,6 @@ function FeaturedProjectCard({
               {project.shortDesc}
             </p>
 
-            {/* <div className="flex gap-5 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <Star
-                  size={12}
-                  className="text-yellow-400"
-                  fill="currentColor"
-                />
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Eye size={12} /> {project.views} vues
-              </span> 
-            </div> */}
-
             <div className="flex flex-wrap gap-2">
               {project.tags.slice(0, 4).map((tag) => (
                 <span
@@ -411,17 +388,19 @@ function FeaturedProjectCard({
             </div>
 
             <div className="flex gap-3">
-              <motion.a
-                href={project.demoUrl}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg
-                           font-bold text-xs text-[#08091a]"
-                style={{ background: project.accentColor }}
-                onClick={(e) => e.stopPropagation()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <ExternalLink size={12} /> Demo
-              </motion.a>
+              {project.demoUrl && (
+                <motion.a
+                  href={project.demoUrl}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg
+                             font-bold text-xs text-[#08091a]"
+                  style={{ background: project.accentColor }}
+                  onClick={(e) => e.stopPropagation()}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <ExternalLink size={12} /> Demo
+                </motion.a>
+              )}
               <motion.a
                 href={project.githubUrl}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg
@@ -438,7 +417,6 @@ function FeaturedProjectCard({
             </div>
           </div>
 
-          {/* Illustration — 2 colonnes avec parallax */}
           <motion.div
             className="hidden md:flex md:col-span-2 items-center justify-center"
             style={{ y }}
@@ -455,7 +433,6 @@ function FeaturedProjectCard({
           </motion.div>
         </div>
 
-        {/* "Voir le détail" au survol */}
         <motion.div
           className="absolute bottom-6 right-8 flex items-center gap-1.5
                      text-xs font-semibold opacity-0 group-hover:opacity-100
@@ -490,7 +467,6 @@ function ProjectCard({
       transition={{ duration: 0.2 }}
       onClick={() => onOpen(project)}
     >
-      {/* Halo */}
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
                    transition-opacity duration-500 pointer-events-none"
@@ -499,7 +475,6 @@ function ProjectCard({
         }}
       />
 
-      {/* Ligne colorée en haut */}
       <div
         className="h-[3px]"
         style={{
@@ -508,7 +483,6 @@ function ProjectCard({
       />
 
       <div className="relative z-10 p-6 flex flex-col gap-4 flex-1">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <span
             className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest rounded-lg"
@@ -522,16 +496,15 @@ function ProjectCard({
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1 text-[11px] text-slate-600">
               <Star size={10} className="text-yellow-400" fill="currentColor" />
-              {project.stars}
+              {project.stars ?? 0}
             </span>
             <span className="text-[11px] text-slate-600">{project.year}</span>
           </div>
         </div>
 
-        {/* Titre + description */}
         <h3
           className="text-base font-bold text-white leading-snug
-                       group-hover:text-cyan-300 transition-colors duration-300"
+                     group-hover:text-cyan-300 transition-colors duration-300"
         >
           {project.title}
         </h3>
@@ -539,7 +512,6 @@ function ProjectCard({
           {project.shortDesc}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-1.5">
           {project.tags.slice(0, 3).map((tag) => (
             <span
@@ -552,22 +524,27 @@ function ProjectCard({
           ))}
         </div>
 
-        {/* Footer */}
         <div
           className="flex items-center justify-between pt-2 mt-auto
-                        border-t border-white/[0.05]"
+                         border-t border-white/[0.05]"
         >
           <div className="flex gap-3">
-            <a
-              href={project.demoUrl}
-              className="text-slate-500 hover:text-white transition-colors"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Demo"
-            >
-              <ExternalLink size={14} />
-            </a>
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-white transition-colors"
+                onClick={(e) => e.stopPropagation()}
+                aria-label="Demo"
+              >
+                <ExternalLink size={14} />
+              </a>
+            )}
             <a
               href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-slate-500 hover:text-white transition-colors"
               onClick={(e) => e.stopPropagation()}
               aria-label="GitHub"
@@ -611,7 +588,6 @@ export default function Portfolio() {
       id="portfolio"
       className="relative min-h-screen bg-[#08091a] py-28 px-6 overflow-hidden"
     >
-      {/* Fonds lumineux */}
       <div
         className="absolute top-0 right-1/4 w-96 h-96
                       rounded-full bg-blue-500/[0.04] blur-[130px] pointer-events-none"
@@ -622,7 +598,6 @@ export default function Portfolio() {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* ── Titre ─────────────────────────────────────────── */}
         <motion.div
           ref={titleRef}
           className="text-center mb-14"
@@ -647,7 +622,6 @@ export default function Portfolio() {
           </p>
         </motion.div>
 
-        {/* ── Filtre catégories ─────────────────────────────── */}
         <motion.div
           className="flex flex-wrap gap-2 justify-center mb-12"
           initial={{ opacity: 0, y: 16 }}
@@ -680,7 +654,6 @@ export default function Portfolio() {
           ))}
         </motion.div>
 
-        {/* ── Projet featured ──────────────────────────────── */}
         {activeCategory === "All" && (
           <div className="mb-5">
             <FeaturedProjectCard
@@ -690,11 +663,6 @@ export default function Portfolio() {
           </div>
         )}
 
-        {/* ── Grille des projets filtrables ─────────────────
-            AnimatePresence mode="popLayout" :
-            → les cartes qui disparaissent jouent exit()
-            → les cartes restantes se repositionnent via layout
-        ─────────────────────────────────────────────────── */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
           variants={listVariants}
@@ -713,7 +681,6 @@ export default function Portfolio() {
           </AnimatePresence>
         </motion.div>
 
-        {/* ── CTA GitHub ───────────────────────────────────── */}
         <motion.div
           className="text-center mt-14"
           initial={{ opacity: 0, y: 20 }}
@@ -741,7 +708,6 @@ export default function Portfolio() {
         </motion.div>
       </div>
 
-      {/*  Modal de détail */}
       <AnimatePresence>
         {selectedProject && (
           <ProjectModal

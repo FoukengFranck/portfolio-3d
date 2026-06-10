@@ -6,8 +6,9 @@ import Navbar from "@/components/Navbar";
 const syne = Syne({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FKBF — Portfolio",
+  title: "FKBF | Foukeng Kemayou — Développeur Web Fullstack",
   description: "Developer web & UI/UX Designer",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

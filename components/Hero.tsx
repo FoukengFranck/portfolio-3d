@@ -12,6 +12,7 @@ import {
   motion,
   useMotionValue,
   useSpring,
+  Variants,
 } from "framer-motion"
 import { ArrowDown, Download, ExternalLink, Sparkles } from "lucide-react"
 
@@ -111,18 +112,18 @@ function useMouseParallax(strength = 14) {
 // ─────────────────────────────────────────────────────────────────
 
 // Parent : orchestre le délai entre chaque enfant (stagger)
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
       staggerChildren: 0.11, // 110ms de décalage entre chaque enfant
-      delayChildren: 0.2,    // attend 200ms avant de démarrer
+      delayChildren: 0.2, // attend 200ms avant de démarrer
     },
   },
-}
+};
 
 // Enfant générique : monte depuis le bas + fondu + blur
-const fadeUpVariants = {
+const fadeUpVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 36,
@@ -134,13 +135,13 @@ const fadeUpVariants = {
     filter: "blur(0px)",
     transition: {
       duration: 0.65,
-      ease: [0.22, 1, 0.36, 1], // "easeOutExpo" — très fluide
+      ease: [0.22, 1, 0.36, 1] as const, // "easeOutExpo" — très fluide
     },
   },
 }
 
 // Avatar : zoom depuis 65% + légère rotation
-const avatarVariants = {
+const avatarVariants: Variants = {
   hidden:  { opacity: 0, scale: 0.65, rotate: -8 },
   visible: {
     opacity: 1,
