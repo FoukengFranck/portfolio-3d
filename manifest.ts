@@ -1,3 +1,4 @@
+// app/manifest.ts
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -16,13 +17,20 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icons/icon-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "maskable any",
+        purpose: "maskable", 
       },
       {
         src: "/icons/icon-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable any",
+        purpose: "maskable",
+      },
+      // icône "any" séparée pour Android/iOS qui en ont besoin
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
       },
     ],
   };
