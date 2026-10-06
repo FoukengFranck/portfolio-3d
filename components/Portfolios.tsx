@@ -1,9 +1,6 @@
 "use client";
 
-// ╔══════════════════════════════════════════════════════════════════╗
-//  Portfolio.tsx — Grille de projets filtrables avec modal détail
-//  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
-// ╚══════════════════════════════════════════════════════════════════╝
+
 
 import { useRef, useState } from "react";
 import {
@@ -33,9 +30,7 @@ const GithubIcon = ({ size = 24, ...props }: GithubIconProps) => (
   </svg>
 );
 
-// ─────────────────────────────────────────────────────────────────
-//  1. DONNÉES
-// ─────────────────────────────────────────────────────────────────
+
 type Project = {
   id: number;
   title: string;
@@ -63,11 +58,11 @@ const PROJECTS: Project[] = [
     fullDesc:
       "Solution d'insertion professionnelle centralisant les offres d'emploi, de stage et de formation. Intègre un espace recruteur pour la publication d'offres et un espace candidat avec gestion de profils, conçue pour dynamiser le marché local.",
     category: "Laravel",
-    tags: ["Laravel", "HTML", "Tailwind", "MySQL", "Docker", "Render"],
+    tags: ["Laravel", "Blade", "Tailwind", "MySQL", "Docker", "Render"],
     gradient: "from-cyan-500/25 via-blue-600/15 to-transparent",
     accentColor: "#22d3ee",
     featured: true,
-    demoUrl: "https://fkbfkamerlink.onrender.com/",
+    demoUrl: "fkbfkamerlink.wasmer.app",
     githubUrl: "https://github.com/FoukengFranck/fkbfkamerlink.git",
     year: "2025 - 2026",
     stars: 0,
@@ -158,9 +153,7 @@ const PROJECTS: Project[] = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES D'ANIMATION (Typées explicitement avec 'Variants')
-// ─────────────────────────────────────────────────────────────────
+
 const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
@@ -186,9 +179,7 @@ const listVariants: Variants = {
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
 
-// ─────────────────────────────────────────────────────────────────
-//  3. SUB-COMPOSANT — Modal de détail d'un projet
-// ─────────────────────────────────────────────────────────────────
+
 function ProjectModal({
   project,
   onClose,
@@ -315,9 +306,7 @@ function ProjectModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  4. SUB-COMPOSANT — Carte projet featured (grande)
-// ─────────────────────────────────────────────────────────────────
+
 function FeaturedProjectCard({
   project,
   onOpen,
@@ -446,9 +435,7 @@ function FeaturedProjectCard({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  5. SUB-COMPOSANT — Carte projet standard
-// ─────────────────────────────────────────────────────────────────
+
 function ProjectCard({
   project,
   onOpen,
@@ -566,9 +553,7 @@ function ProjectCard({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  6. COMPOSANT PRINCIPAL
-// ─────────────────────────────────────────────────────────────────
+
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

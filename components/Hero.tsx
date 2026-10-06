@@ -1,10 +1,6 @@
 "use client"
 
-// ╔══════════════════════════════════════════════════════════════════╗
-//  Hero.tsx — Section d'accueil animée
-//  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
-//  Installe : npm install framer-motion lucide-react
-// ╚══════════════════════════════════════════════════════════════════╝
+
 
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image";
@@ -16,9 +12,9 @@ import {
 } from "framer-motion"
 import { ArrowDown, Download, ExternalLink, Sparkles } from "lucide-react"
 
-// ─────────────────────────────────────────────────────────────────
-//  1. DONNÉES — modifie ici sans toucher au JSX
-// ─────────────────────────────────────────────────────────────────
+
+
+
 const ROLES = [
   "Developpeur Web",
   "UI/UX Designer",
@@ -27,18 +23,9 @@ const BADGES = ["React", "Next.js", "Laravel", "Tailwind", "Figma"]
 const STATS = [
   { value: "1+", label: "Années exp." },
   { value: "10+", label: "Projets réalisés" },
-//   { value: "20+", label: "Happy clients" },
 ];
 
-// ─────────────────────────────────────────────────────────────────
-//  2. HOOK — Typewriter (machine à écrire)
-//
-//  Étapes :
-//  ① Phase frappe   → ajoute 1 caractère toutes les `speed` ms
-//  ② Phase pause    → attend `pause` ms une fois le mot terminé
-//  ③ Phase effaçage → retire 1 caractère toutes les `speed/2` ms
-//  ④ On passe au mot suivant → retour à ①
-// ─────────────────────────────────────────────────────────────────
+
 function useTypewriter(words: string[], speed = 85, pause = 1800) {
   const [displayed, setDisplayed] = useState("")
   const [wordIdx,   setWordIdx]   = useState(0)
@@ -50,7 +37,6 @@ function useTypewriter(words: string[], speed = 85, pause = 1800) {
 
     const id = setTimeout(() => {
       if (!deleting) {
-        // ── Frappe : on ajoute un caractère ──
         setDisplayed(current.slice(0, charIdx + 1))
         setCharIdx((c) => c + 1)
         // Mot complet → on attend avant d'effacer
@@ -58,7 +44,6 @@ function useTypewriter(words: string[], speed = 85, pause = 1800) {
           setTimeout(() => setDeleting(true), pause)
         }
       } else {
-        // ── Effaçage : on retire un caractère ──
         setDisplayed(current.slice(0, charIdx - 1))
         setCharIdx((c) => c - 1)
         // Mot effacé → on passe au suivant
@@ -67,7 +52,7 @@ function useTypewriter(words: string[], speed = 85, pause = 1800) {
           setWordIdx((i) => (i + 1) % words.length)
         }
       }
-    }, deleting ? speed / 2 : speed) // effaçage 2× plus rapide
+    }, deleting ? speed / 2 : speed)
 
     return () => clearTimeout(id)
   }, [charIdx, deleting, wordIdx, words, speed, pause])
@@ -75,24 +60,17 @@ function useTypewriter(words: string[], speed = 85, pause = 1800) {
   return displayed
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  3. HOOK — Parallax souris
-//
-//  useMotionValue → valeur Framer Motion SANS re-render React
-//  useSpring      → ajoute de l'inertie (mouvement physique naturel)
-//  Résultat : l'avatar suit la souris avec du retard → effet 3D
-// ─────────────────────────────────────────────────────────────────
+
 function useMouseParallax(strength = 14) {
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
 
-  // stiffness = rigidité du ressort, damping = amortissement
+ 
   const x = useSpring(rawX, { stiffness: 55, damping: 18 })
   const y = useSpring(rawY, { stiffness: 55, damping: 18 })
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      // Normalise la position entre -strength et +strength
       rawX.set(((e.clientX / window.innerWidth)  - 0.5) * strength * 2)
       rawY.set(((e.clientY / window.innerHeight) - 0.5) * strength * 2)
     }
@@ -103,26 +81,19 @@ function useMouseParallax(strength = 14) {
   return { x, y }
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  4. VARIANTES FRAMER MOTION
-//
-//  Une variante = un objet { etatA: {...}, etatB: {...} }
-//  On bascule entre les états via animate="etatA" ou animate="etatB"
-//  Le parent propage automatiquement ses variantes à ses enfants.
-// ─────────────────────────────────────────────────────────────────
 
-// Parent : orchestre le délai entre chaque enfant (stagger)
+
+
 const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.11, // 110ms de décalage entre chaque enfant
-      delayChildren: 0.2, // attend 200ms avant de démarrer
+      staggerChildren: 0.11,
+      delayChildren: 0.2,
     },
   },
 };
 
-// Enfant générique : monte depuis le bas + fondu + blur
 const fadeUpVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -135,12 +106,11 @@ const fadeUpVariants: Variants = {
     filter: "blur(0px)",
     transition: {
       duration: 0.65,
-      ease: [0.22, 1, 0.36, 1] as const, // "easeOutExpo" — très fluide
-    },
+      ease: [0.22, 1, 0.36, 1] as const,
   },
 }
 
-// Avatar : zoom depuis 65% + légère rotation
+
 const avatarVariants: Variants = {
   hidden:  { opacity: 0, scale: 0.65, rotate: -8 },
   visible: {
@@ -151,9 +121,7 @@ const avatarVariants: Variants = {
   },
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  5. COMPOSANT PRINCIPAL
-// ─────────────────────────────────────────────────────────────────
+
 export default function Hero() {
   const role  = useTypewriter(ROLES)
   const mouse = useMouseParallax(14)
@@ -167,11 +135,6 @@ export default function Hero() {
       {/* Fond décoratif */}
       <HeroBackground mouseX={mouse.x} mouseY={mouse.y} />
 
-      {/* ── Contenu principal ──────────────────────────────────
-          motion.div avec variants + initial + animate :
-          → démarre en "hidden", passe en "visible" au montage
-          → staggerChildren fait apparaître les blocs en cascade
-      ─────────────────────────────────────────────────────────── */}
       <motion.div
         className="relative z-10 max-w-6xl w-full mx-auto
                    grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
@@ -200,8 +163,6 @@ export default function Hero() {
               Available for work
             </span>
           </motion.div>
-
-          {/* Titre */}
           <motion.div variants={fadeUpVariants}>
             <h1
               className="text-5xl lg:text-[3.75rem] font-extrabold
@@ -215,7 +176,6 @@ export default function Hero() {
                 >
                   Foukeng Kemayou Bavel Franck
                 </span>
-                {/* Soulignement qui s'étire progressivement */}
                 <motion.span
                   className="absolute -bottom-1 left-0 h-[2px] rounded-full
                              bg-gradient-to-r from-cyan-400 to-blue-500"
@@ -227,7 +187,6 @@ export default function Hero() {
             </h1>
           </motion.div>
 
-          {/* Typewriter */}
           <motion.div
             variants={fadeUpVariants}
             className="h-8 flex items-center"
@@ -236,7 +195,6 @@ export default function Hero() {
               I'm a{" "}
               <span className="text-cyan-400">
                 {role}
-                {/* Curseur | clignotant via Framer Motion */}
                 <motion.span
                   className="inline-block w-[2px] h-5 bg-cyan-400 ml-0.5
                              align-middle rounded-full"
@@ -262,7 +220,6 @@ export default function Hero() {
             l'utilisateur.
           </motion.p>
 
-          {/* Badges technos — animation individuelle avec délai custom */}
           <motion.div
             variants={fadeUpVariants}
             className="flex flex-wrap gap-2"
@@ -287,12 +244,10 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          {/* CTA Boutons */}
           <motion.div
             variants={fadeUpVariants}
             className="flex flex-wrap gap-3 pt-1"
           >
-            {/* Primaire */}
             <motion.a
               href="#portfolio"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl
@@ -305,7 +260,6 @@ export default function Hero() {
               Voir mon travail
             </motion.a>
 
-            {/* Secondaire */}
             <motion.a
               href="/docs/FOUKENG-KEMAYOU-BAVEL-FRANCK-DEVELOPPEUR-WEB.pdf"
               download="FOUKENG-KEMAYOU-BAVEL-FRANCK-DEVELOPPEUR-WEB.pdf"
@@ -337,11 +291,6 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* ── Avatar (colonne droite) ─────────────────────────
-            style={{ x, y }} → applique le parallax souris :
-            l'avatar se décale légèrement quand la souris bouge
-            → crée une sensation de profondeur 3D
-        ─────────────────────────────────────────────────────── */}
         <motion.div
           className="flex justify-center order-1 lg:order-2"
           variants={avatarVariants}
@@ -366,13 +315,10 @@ export default function Hero() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  SUB-COMPOSANT — Avatar avec halos orbitants + flottement
-// ─────────────────────────────────────────────────────────────────
+
 function FloatingAvatar() {
   return (
     <div className="relative select-none">
-      {/* Halo 1 : rotation lente clockwise */}
       <motion.div
         className="absolute inset-[-20px] rounded-full border border-cyan-400/20"
         animate={{ rotate: 360 }}
@@ -383,7 +329,6 @@ function FloatingAvatar() {
                          shadow-[0_0_8px_#22d3ee]" />
       </motion.div>
 
-      {/* Halo 2 : rotation lente counter-clockwise */}
       <motion.div
         className="absolute inset-[-38px] rounded-full border border-blue-500/10"
         animate={{ rotate: -360 }}
@@ -393,7 +338,6 @@ function FloatingAvatar() {
                          w-1.5 h-1.5 rounded-full bg-blue-400" />
       </motion.div>
 
-      {/* Photo avatar — flotte en haut/bas */}
       <motion.div
         className="relative w-60 h-60 lg:w-[22rem] lg:h-[22rem] rounded-full
                    overflow-hidden border-2 border-cyan-400/25
@@ -410,7 +354,6 @@ function FloatingAvatar() {
         </div>
       </motion.div>
 
-      {/* Badge "3+ ans" — pop depuis l'angle avec spring */}
       <motion.div
         className="absolute -bottom-5 -right-5 bg-[#0d1030]
                    border border-cyan-400/20 rounded-2xl px-4 py-2.5
@@ -426,9 +369,7 @@ function FloatingAvatar() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  SUB-COMPOSANT — Fond décoratif (grille + orbes)
-// ─────────────────────────────────────────────────────────────────
+
 function HeroBackground({
   mouseX,
   mouseY,

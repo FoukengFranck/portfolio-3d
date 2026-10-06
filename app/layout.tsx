@@ -4,6 +4,13 @@ import { Syne } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 
+verification: { google: "<meta
+  name="google-site-verification"
+  content="1G6fB7NrtApYp7VLZqcgc0ImvVi2C9a8g5xm8vAN7Dc"
+/>;" 
+
+
+
 const syne = Syne({ subsets: ["latin"] });
 
 

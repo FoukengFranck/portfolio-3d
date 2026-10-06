@@ -1,9 +1,6 @@
 "use client";
 
-// ╔══════════════════════════════════════════════════════════════════╗
-//  Skills.tsx — Barres de compétences animées au scroll
-//  Stack  : Next.js App Router + Framer Motion + Tailwind CSS
-// ╚══════════════════════════════════════════════════════════════════╝
+
 
 import { useRef, useState, useEffect } from "react";
 import {
@@ -12,7 +9,7 @@ import {
   useScroll,
   useTransform,
   useSpring,
-  Variants, // <-- Importation du type pour corriger l'erreur TypeScript
+  Variants,
 } from "framer-motion";
 import {
   Code2,
@@ -25,9 +22,7 @@ import {
   Brush,
 } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────
-//  1. DONNÉES
-// ─────────────────────────────────────────────────────────────────
+
 const SKILLS = [
   { name: "Laravel / PHP", level: 55, color: "#f43f5e", icon: Server },
   { name: "React / Next.js", level: 45, color: "#22d3ee", icon: Code2 },
@@ -46,9 +41,7 @@ const TOOLS = [
   "Vite",
 ];
 
-// ─────────────────────────────────────────────────────────────────
-//  2. VARIANTES D'ANIMATION (Typées explicitement)
-// ─────────────────────────────────────────────────────────────────
+
 
 // Parent → délai en cascade entre ses enfants
 const listVariants: Variants = {
@@ -58,7 +51,7 @@ const listVariants: Variants = {
   },
 };
 
-// Enfant → entre depuis la gauche avec blur
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, x: -28, filter: "blur(4px)" },
   visible: {
@@ -69,7 +62,7 @@ const cardVariants: Variants = {
   },
 };
 
-// Titre de section
+
 const titleVariants: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: {
@@ -79,9 +72,7 @@ const titleVariants: Variants = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────
-//  3. HOOK — Compteur animé de 0 → target
-// ─────────────────────────────────────────────────────────────────
+
 function useCountUp(target: number, active: boolean, durationMs = 1400) {
   const [count, setCount] = useState(0);
 
@@ -90,8 +81,8 @@ function useCountUp(target: number, active: boolean, durationMs = 1400) {
 
     let current = 0;
     const fps = 60;
-    const frames = (durationMs / 1000) * fps; // nb total de frames
-    const increment = target / frames; // valeur ajoutée par frame
+    const frames = (durationMs / 1000) * fps;
+    const increment = target / frames;
 
     const id = setInterval(() => {
       current += increment;
@@ -109,9 +100,7 @@ function useCountUp(target: number, active: boolean, durationMs = 1400) {
   return count;
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  4. SUB-COMPOSANT — Barre de compétence individuelle
-// ─────────────────────────────────────────────────────────────────
+
 function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
@@ -127,7 +116,6 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Halo coloré subtil au survol */}
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
                    transition-opacity duration-500 pointer-events-none"
@@ -135,11 +123,8 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
           background: `radial-gradient(circle at 0% 0%, ${color}10, transparent 70%)`,
         }}
       />
-
-      {/* En-tête : icône + nom + compteur */}
       <div className="relative flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          {/* Badge icône coloré */}
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: `${color}18`, border: `1px solid ${color}30` }}
@@ -152,10 +137,7 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
           {count}%
         </span>
       </div>
-
-      {/* Barre de progression */}
       <div className="relative h-[5px] bg-white/[0.06] rounded-full overflow-hidden">
-        {/* Barre principale */}
         <motion.div
           className="absolute inset-y-0 left-0 rounded-full"
           style={{ background: `linear-gradient(90deg, ${color}80, ${color})` }}
@@ -184,9 +166,6 @@ function SkillBar({ name, level, color, icon: Icon }: (typeof SKILLS)[number]) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  5. SUB-COMPOSANT — Colonne droite (intro + illustration parallax)
-// ─────────────────────────────────────────────────────────────────
 function SkillsIntro() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
@@ -271,9 +250,7 @@ function SkillsIntro() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  6. SUB-COMPOSANT — Icônes qui orbitent (décoratif)
-// ─────────────────────────────────────────────────────────────────
+
 function OrbitingIcons() {
   const icons = [Code2, Palette, Database, Globe, Layers, Cpu];
   const radius = 88;
@@ -319,9 +296,7 @@ function OrbitingIcons() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  7. COMPOSANT PRINCIPAL
-// ─────────────────────────────────────────────────────────────────
+
 export default function Skills() {
   const titleRef = useRef<HTMLDivElement>(null);
   const isTitleInView = useInView(titleRef, { once: true });
