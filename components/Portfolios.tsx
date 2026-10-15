@@ -62,7 +62,7 @@ const PROJECTS: Project[] = [
     gradient: "from-cyan-500/25 via-blue-600/15 to-transparent",
     accentColor: "#22d3ee",
     featured: true,
-    demoUrl: "fkbfkamerlink.wasmer.app",
+    demoUrl: "https://fkbfkamerlink.wasmer.app/",
     githubUrl: "https://github.com/FoukengFranck/fkbfkamerlink.git",
     year: "2025 - 2026",
     stars: 0,
