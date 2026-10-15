@@ -73,7 +73,7 @@ export const metadata: Metadata = {
   },
   // Vérification Google Search Console (balise HTML)
   verification: {
-    google: "1G6fB7NrtApYp7VLZqcgc0ImvVi2C9a8g5xm8vAN7Dc",
+    google: "mbodwNKGf-EDvoKO-luNXp6YnqvjLVElETRredwaHOg",
   },
 };
 
